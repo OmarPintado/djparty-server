@@ -17,6 +17,12 @@ DJ Party API Rest
 $ npm install
 ```
 
+## Setup Database
+
+```bash
+$ docker-compose up -d
+```
+
 ## Compile and run the project
 
 ```bash
