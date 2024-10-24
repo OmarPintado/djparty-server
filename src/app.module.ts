@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './application/auth/auth.module';
+import * as entities from './domain/entities';
 
 @Module({
     imports: [
@@ -17,6 +18,8 @@ import { AuthModule } from './application/auth/auth.module';
             database: process.env.DB_NAME,
             username: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
+            synchronize: true,
+            entities: Object.values(entities),
         }),
 
         AuthModule,

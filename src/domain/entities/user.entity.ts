@@ -3,8 +3,10 @@ import {
     BeforeUpdate,
     Column,
     Entity,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
+import { MusicRoom } from './music-room.entity';
 
 @Entity('users')
 export class User {
@@ -31,6 +33,9 @@ export class User {
 
     @Column('text', { nullable: true, default: null })
     url_profile: string;
+
+    @OneToMany(() => MusicRoom, (musicRoom) => musicRoom.user)
+    music_room: MusicRoom[];
 
     @BeforeInsert()
     checkFieldsBeforeInsert() {
