@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { MusicRoom } from './music-room.entity';
 
-@Entity()
+@Entity('room_state')
 export class RoomState {
     @PrimaryGeneratedColumn('uuid')
     id: string;
