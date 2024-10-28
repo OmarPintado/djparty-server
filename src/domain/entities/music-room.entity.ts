@@ -18,10 +18,10 @@ export class MusicRoom {
     @Column('varchar', { default: null })
     description: string;
 
-    @Column('boolean', { default: false })
-    is_open: boolean;
+    @Column('uuid', { nullable: false })
+    created_by: string;
 
     @ManyToOne(() => User, (user) => user.music_room)
-    @JoinColumn({ name: 'created_by' })
+    @JoinColumn({ name: 'created_by', referencedColumnName: 'id' })
     user: User;
 }
