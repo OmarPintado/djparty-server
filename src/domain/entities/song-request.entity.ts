@@ -8,21 +8,16 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { MusicRoom } from './music-room.entity';
+import { Song } from './song.entity';
 
-@Entity()
-@Index(['music_room_id', 'user_id', 'track_id'], { unique: true })
+@Entity('song_request')
+@Index(['music_room_id', 'user_id', 'song_id'], { unique: true })
 export class SongRequest {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column('varchar', { length: 100 })
-    track_id: string;
-
-    @Column('varchar', { length: 100 })
-    song_title: string;
-
-    @Column('varchar', { length: 100 })
-    artist: string;
+    @Column('uuid', { nullable: false })
+    song_id: string;
 
     @Column('boolean', { default: false })
     is_accepted: boolean;
@@ -40,4 +35,8 @@ export class SongRequest {
     @ManyToOne(() => User, (user) => user.music_room)
     @JoinColumn({ name: 'user_id' })
     user: User;
+
+    @ManyToOne(() => Song, (song) => song.songRequests)
+    @JoinColumn({ name: 'song_id' })
+    song: Song;
 }

@@ -1,5 +1,6 @@
 import {
     Column,
+    CreateDateColumn,
     Entity,
     JoinColumn,
     OneToOne,
@@ -8,7 +9,7 @@ import {
 } from 'typeorm';
 import { MusicRoom } from './music-room.entity';
 
-@Entity()
+@Entity('room_state')
 export class RoomState {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -16,12 +17,12 @@ export class RoomState {
     @Column('boolean', { nullable: false, default: false })
     is_open: boolean;
 
-    @Column('varchar', { length: 100 })
-    current_track_id: string;
-
     @OneToOne(() => MusicRoom)
     @JoinColumn({ name: 'music_room_id' })
     music_room: MusicRoom;
+
+    @CreateDateColumn()
+    created_at: Date;
 
     @UpdateDateColumn()
     updated_at: Date;
