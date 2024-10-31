@@ -10,9 +10,11 @@ import { AuthController } from './auth.controller';
 import { User } from '../../domain/entities/user.entity';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
+import { GoogleStrategy } from './strategies/google.oauth';
+
 @Module({
     controllers: [AuthController],
-    providers: [AuthService, BcryptAdapter, JwtStrategy],
+    providers: [AuthService, BcryptAdapter, JwtStrategy, GoogleStrategy],
     imports: [
         ConfigModule,
 
