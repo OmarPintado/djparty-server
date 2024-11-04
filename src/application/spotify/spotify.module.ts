@@ -4,10 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SpotifyService } from './spotify.service';
 import { SpotifyController } from './spotify.controller';
 import { SpotifyAdapter } from '../../infrastructure/adapters/spotify.adapter';
-import { Genres } from '../../domain/entities';
+import { Genres, SongRequest } from '../../domain/entities';
 
 @Module({
-    imports: [ConfigModule, TypeOrmModule.forFeature([Genres])],
+    imports: [ConfigModule, TypeOrmModule.forFeature([Genres, SongRequest])],
     controllers: [SpotifyController],
     providers: [SpotifyService, SpotifyAdapter],
 })
