@@ -5,6 +5,7 @@ import { AuthModule } from './application/auth/auth.module';
 import { MusicRoomModule } from './application/music-room/music-room.module';
 import { SpotifyModule } from './application/spotify/spotify.module';
 import * as entities from './domain/entities';
+import { WebSocketModule } from './application/websocket/websocket.module';
 
 @Module({
     imports: [
@@ -28,6 +29,7 @@ import * as entities from './domain/entities';
         AuthModule,
         MusicRoomModule,
         SpotifyModule,
+        WebSocketModule,
     ],
     controllers: [],
     providers: [],
