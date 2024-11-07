@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { SpotifyAdapter } from '../../infrastructure/adapters/spotify.adapter';
 import { Track } from '../../domain/models/track.model';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Genres } from '../../domain/entities/genre.entity';
+import { Genres } from '../../domain/entities';
 import { Repository } from 'typeorm';
-import { MusicRoom, Song, SongRequest, User } from 'src/domain/entities';
+import { SongRequest } from 'src/domain/entities';
 import { SaveSongRequestDto } from './dto/save-song-request.dto';
 
 @Injectable()
@@ -28,7 +28,8 @@ export class SpotifyService {
             })),
             album: {
                 name: track.album.name,
-                images: track.album.images,
+                image: track.album.images.find((image) => image.width === 64)
+                    ?.url,
             },
             popularity: track.popularity,
         }));
@@ -51,13 +52,13 @@ export class SpotifyService {
     }
 
     async saveSongRequest(data: SaveSongRequestDto): Promise<any> {
-        const songRequest = new SongRequest()
-        songRequest.user_id = data.user_id
-        songRequest.music_room_id = data.music_room_id
-        songRequest.song_id = data.song_id
+        const songRequest = new SongRequest();
+        songRequest.user_id = data.user_id;
+        songRequest.music_room_id = data.music_room_id;
+        songRequest.song_id = data.song_id;
 
-        await this.songRequestRepository.save(songRequest)
+        await this.songRequestRepository.save(songRequest);
 
-        return 'Song Request Saved!'
+        return 'Song Request Saved!';
     }
 }
