@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { User } from '../../domain/models/user.model';
+import { User } from '../models/user.model';
 
 @Injectable()
 export class SocketAdapter {

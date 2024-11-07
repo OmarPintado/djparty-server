@@ -7,8 +7,8 @@ import {
     OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { SocketAdapter } from './infraestructure/adapters/socket.adapter';
-import { MusicRoom } from './domain/models/music-room.model';
+import { SocketAdapter } from './adapters/socket.adapter';
+import { MusicRoom } from './models/music-room.model';
 import { SongRequest } from 'src/domain/entities';
 import { WsService } from './websocket.service';
 import {SendMessageRoomDto} from "./dto"
@@ -18,7 +18,7 @@ import { AuthWS } from '../auth/decorators/authws.decorator';
 import { RoleProtected } from '../auth/decorators/role-protected.decorator';
 import { UserRoleGuard } from '../auth/guards/user-role.guard';
 import { UserRoleWsGuard } from '../auth/guards/user-role-ws.guard';
-import { User } from './domain/models/user.model';
+import { User } from './models/user.model';
 import { SocketHandshakeDto } from './dto/socket-handshake.dto';
 
 @WebSocketGateway({
