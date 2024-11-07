@@ -1,0 +1,1 @@
+export {SendMessageRoomDto} from "./send-message-room.dto"
