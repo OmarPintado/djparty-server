@@ -11,12 +11,12 @@ import { Song } from './song.entity';
 @Entity('artist_song')
 export class SongArtists {
     @PrimaryGeneratedColumn('uuid')
-    id: number;
+    id: string;
 
-    @Column()
+    @Column('uuid')
     id_song: string;
 
-    @Column()
+    @Column('uuid')
     id_artist: string;
 
     @ManyToOne(() => Artist, (artist) => artist.artistSongs)

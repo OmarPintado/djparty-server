@@ -5,7 +5,10 @@ import { SongRequest } from './song-request.entity';
 @Entity('song')
 export class Song {
     @PrimaryGeneratedColumn('uuid')
-    id: number;
+    id: string;
+
+    @Column('varchar', { length: 255 })
+    id_track: string; //ID Spotify
 
     @Column('varchar', { length: 255 })
     title: string;

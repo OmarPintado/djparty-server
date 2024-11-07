@@ -4,7 +4,7 @@ import { SongArtists } from './song-artists.entity';
 @Entity('artists')
 export class Artist {
     @PrimaryGeneratedColumn('uuid')
-    id: number;
+    id: string;
 
     @Column('varchar', { length: 150, unique: true })
     artist: string;
