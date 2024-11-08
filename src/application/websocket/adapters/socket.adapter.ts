@@ -1,16 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { User } from '../models/user.model';
+import { UserSocket } from '../models/user.model';
 
 @Injectable()
 export class SocketAdapter {
-    async emitAll(sockets: Array<User>, event: string,  message: any): Promise<void> {
-        for (let i = 0; i < sockets.length; i++) 
+    async emitAll(
+        sockets: Array<UserSocket>,
+        event: string,
+        message: any,
+    ): Promise<void> {
+        for (let i = 0; i < sockets.length; i++)
             sockets[i].socket.emit(event, message);
     }
 
-    async emitTo(sockets: Array<User>, to: Socket, event: string,  message: any): Promise<void> {
-        for (let i = 0; i < sockets.length; i++)  {
+    async emitTo(
+        sockets: Array<UserSocket>,
+        to: Socket,
+        event: string,
+        message: any,
+    ): Promise<void> {
+        for (let i = 0; i < sockets.length; i++) {
             if (sockets[i].socket.id === to.id) {
                 sockets[i].socket.emit(event, message);
                 break;
@@ -18,9 +27,17 @@ export class SocketAdapter {
         }
     }
 
-    async emitRoom(sockets: Array<User>, room_id: string, event: string, message: any) {
+    async emitRoom(
+        sockets: Array<UserSocket>,
+        room_id: string,
+        event: string,
+        message: any,
+    ) {
         for (let i = 0; i < sockets.length; i++) {
-            if (sockets[i].current_room && sockets[i].current_room === room_id) {
+            if (
+                sockets[i].current_room &&
+                sockets[i].current_room === room_id
+            ) {
                 sockets[i].socket.emit(event, message);
             }
         }

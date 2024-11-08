@@ -51,13 +51,13 @@ export class SpotifyService {
     }
 
     async saveSongRequest(data: SaveSongRequestDto): Promise<any> {
-        const songRequest = new SongRequest()
-        songRequest.user_id = data.user_id
-        songRequest.music_room_id = data.music_room_id
-        songRequest.song_id = data.song_id
+        const songRequest = new SongRequest();
+        songRequest.user_id = data.user_id;
+        songRequest.music_room_id = data.music_room_id;
+        songRequest.song_id = data.song_id;
 
-        await this.songRequestRepository.save(songRequest)
+        await this.songRequestRepository.save(songRequest);
 
-        return 'Song Request Saved!'
+        return 'Song Request Saved!';
     }
 }

@@ -1,7 +1,10 @@
-import { Socket } from "socket.io";
+import { Socket } from 'socket.io';
 
-export interface User {
+export interface UserSocket {
+    id: string;
+    fullName: string;
+    isActive: boolean;
+
     socket: Socket;
-    fullName?: string;
     current_room?: string;
 }

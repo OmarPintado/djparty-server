@@ -1,4 +1,4 @@
-import { Strategy } from 'passport-custom';
+// import { Strategy } from 'passport-custom';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
@@ -8,28 +8,38 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { verify } from 'crypto';
+import { ExtractJwt, JwtFromRequestFunction, Strategy } from 'passport-jwt';
 
 @Injectable()
 export class WsStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    constructor(
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
+        configService: ConfigService,
     ) {
-        super();
+        super({
+            secretOrKey: configService.get('JWT_SECRET'),
+            jwtFromRequest: ExtractJwt.fromExtractors([
+                (req) => {
+                    const { authorization } = req.handshake.headers;
+                    return authorization.split(' ')[1];
+                },
+            ]),
+        });
     }
 
-  async validate(payload: WsPayloadInterface): Promise<User> {
-    const { user_id: id } = payload;
+    async validate(payload: WsPayloadInterface): Promise<User> {
+        const { user_id: id } = payload;
 
-    const user = await this.userRepository.findOneBy({ id });
-    
-    if (!user) throw new UnauthorizedException('Token is not valid.');
+        const user = await this.userRepository.findOneBy({ id });
 
-    if (!user.isActive)
-        throw new UnauthorizedException(
-            'User is inactive, contact an admin.',
-        );
+        if (!user) throw new UnauthorizedException('Token is not valid.');
 
-    return user;
-  }
+        if (!user.isActive)
+            throw new UnauthorizedException(
+                'User is inactive, contact an admin.',
+            );
+
+        return user;
+    }
 }
