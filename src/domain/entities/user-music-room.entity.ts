@@ -2,6 +2,7 @@ import {
     Column,
     Entity,
     Index,
+    JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -24,8 +25,10 @@ export class UserMusicRoom {
     is_banned: boolean;
 
     @ManyToOne(() => User, (user) => user.userMusicRooms)
+    @JoinColumn({ name: 'user_id' })
     user: User;
 
     @ManyToOne(() => MusicRoom, (room) => room.userMusicRooms)
+    @JoinColumn({ name: 'music_room_id' })
     room: MusicRoom;
 }
