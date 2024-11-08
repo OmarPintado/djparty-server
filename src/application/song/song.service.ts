@@ -94,8 +94,7 @@ export class SongService {
             await this.songRequestRepository.save(songRequest);
 
             return {
-                success: true,
-                message: `SE ENVIÓ CON ÉXITO`,
+                message: `Canción enviada con éxito: ${song.title}`,
             };
         } catch (error) {
             this.logger.error(error);
