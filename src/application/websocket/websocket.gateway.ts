@@ -48,11 +48,12 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
             (user) => user.socket.id == socket.id,
         );
         if (!current_room) {
-            throw new Error(`User ${fullName} is not in any room`);
+            const error = `User ${fullName} is not in any room`
+            this.handleError(socket, error)
         }
 
         const songRequests =
-            this.websocketService.getSongRequestList(current_room);
+            await this.websocketService.getSongRequestList(current_room);
         this.socketAdapter.emitRoom(
             this.users,
             current_room,
@@ -67,7 +68,8 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
             (user) => user.socket.id == socket.id,
         );
         if (!current_room) {
-            throw new Error(`User ${fullName} is not in any room`);
+            const error = `User ${fullName} is not in any room`
+            this.handleError(socket, error)
         }
 
         const users_in_room = this.users.filter(
@@ -76,32 +78,14 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
         socket.emit(SocketEvents.GETUSERSBYROOM, users_in_room);
     }
 
-    @SubscribeMessage(SocketEvents.SELECTEDSONGREQUEST)
-    async selectedSongRequest(socket: Socket, song_request_id: string) {
-        const { fullName, current_room } = this.users.find(
-            (user) => user.socket.id == socket.id,
-        );
-        if (!current_room) {
-            throw new Error(`User ${fullName} is not in any room`);
-        }
-
-        const songRequest =
-            this.websocketService.selectedSongRequest(current_room);
-        this.socketAdapter.emitRoom(
-            this.users,
-            current_room,
-            SocketEvents.SELECTEDSONGREQUEST,
-            songRequest,
-        );
-    }
-
     @SubscribeMessage(SocketEvents.SENDMESSAGEROOM)
     async sendMessageRoom(socket: Socket, message: any) {
         const { fullName, current_room } = this.users.find(
             (user) => user.socket.id == socket.id,
         );
         if (!current_room) {
-            throw new Error(`User ${fullName} is not in any room`);
+            const error = `User ${fullName} is not in any room`
+            this.handleError(socket, error)
         }
 
         this.socketAdapter.emitRoom(
@@ -118,7 +102,8 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
             (user) => user.socket.id == socket.id,
         );
         if (!current_room) {
-            throw new Error(`User ${fullName} is not in any room`);
+            const error = `User ${fullName} is not in any room`
+            this.handleError(socket, error)
         }
 
         this.songs = this.songs.map((s) =>
@@ -130,5 +115,30 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
             SocketEvents.VOTESONGREQUEST,
             song_request_id,
         );
+    }
+
+    @SubscribeMessage(SocketEvents.SELECTEDSONGREQUEST)
+    async selectedSongRequest(socket: Socket, song_request_id: string) {
+        const { fullName, current_room } = this.users.find(
+            (user) => user.socket.id == socket.id,
+        );
+        if (!current_room) {
+            const error = `User ${fullName} is not in any room`
+            this.handleError(socket, error)
+        }
+
+        const songRequest =
+            await this.websocketService.selectedSongRequest(song_request_id);
+        this.socketAdapter.emitRoom(
+            this.users,
+            current_room,
+            SocketEvents.SELECTEDSONGREQUEST,
+            songRequest,
+        );
+    }
+
+    async handleError(socket: Socket, error: string) {
+        socket.emit(SocketEvents.ERRORS, error)
+        throw new Error(error);
     }
 }

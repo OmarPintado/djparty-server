@@ -1,12 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Socket } from 'socket.io';
-import { SocketAdapter } from './adapters/socket.adapter';
 import { UserService } from './services/user.service';
 import { SongRequestService } from './services/song-request.service';
 import { UserSocket } from './models/user.model';
-import { SocketEvents } from './interfaces/socket-events';
-import { SongRequestSocket } from './models/song-request.model';
 
 @Injectable()
 export class WsService {
@@ -19,11 +16,17 @@ export class WsService {
     async handleConnection(socket: Socket): Promise<UserSocket> {
         const token = socket.handshake.headers.authorization.split(' ')[1];
         const { user_id } = this.jwtService.decode(token);
+        const music_room_id = socket.handshake.query.music_room_id as string | undefined;
+        if (!music_room_id) {
+            throw new Error(`User must to be in any music room`)
+        }
+
         const user = await this.userService.getUserById(user_id);
         return {
             id: user.id,
             fullName: user.fullName,
             isActive: user.isActive,
+            current_room: music_room_id,
             socket: socket,
         };
     }

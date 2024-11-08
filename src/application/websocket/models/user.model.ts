@@ -6,5 +6,5 @@ export interface UserSocket {
     isActive: boolean;
 
     socket: Socket;
-    current_room?: string;
+    current_room: string;
 }
