@@ -6,3 +6,4 @@ export { Song } from './song.entity';
 export { SongArtists } from './song-artists.entity';
 export { SongRequest } from './song-request.entity';
 export { User } from './user.entity';
+export { UserMusicRoom } from './user-music-room.entity';

@@ -7,6 +7,7 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { MusicRoom } from './music-room.entity';
+import { UserMusicRoom } from './user-music-room.entity';
 
 @Entity('users')
 export class User {
@@ -36,6 +37,9 @@ export class User {
 
     @OneToMany(() => MusicRoom, (musicRoom) => musicRoom.user)
     music_room: MusicRoom[];
+
+    @OneToMany(() => UserMusicRoom, (userMusicRoom) => userMusicRoom.user)
+    userMusicRooms: UserMusicRoom[];
 
     @BeforeInsert()
     checkFieldsBeforeInsert() {
