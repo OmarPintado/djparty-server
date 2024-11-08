@@ -69,10 +69,10 @@ export class AuthService {
 
     googleRedirect(req) {
         return {
-          message: 'User information from google',
-          user: req.user,
+            message: 'User information from google',
+            user: req.user,
         };
-      }
+    }
 
     private getJwtToken(payload: JwtPayloadInterface) {
         return this.jwtService.sign(payload);
