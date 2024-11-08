@@ -20,7 +20,7 @@ export class SpotifyService {
     async searchSongs(query: string): Promise<Track[]> {
         const tracks = await this.spotifyAdapter.searchTracks(query);
         return tracks.map((track) => ({
-            id: track.id,
+            spotify_track_id: track.id,
             name: track.name,
             artists: track.artists.map((artist) => ({
                 name: artist.name,
