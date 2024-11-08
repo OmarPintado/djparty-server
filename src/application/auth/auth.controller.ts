@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Post,
+    Request,
+    UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { GoogleOAuthGuard } from './guards/google-oauth.guard';
@@ -24,6 +31,6 @@ export class AuthController {
     @Get('google-redirect')
     @UseGuards(GoogleOAuthGuard)
     googleRedirect(@Request() req) {
-        return this.authService.googleRedirect(req)
+        return this.authService.googleRedirect(req);
     }
 }
