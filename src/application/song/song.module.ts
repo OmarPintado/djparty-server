@@ -1,29 +1,32 @@
 import { Module } from '@nestjs/common';
-import { SongService } from './song.service';
-import { SongController } from './song.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from '../auth/auth.module';
+import { SongService } from './song.service';
+import { GenreService } from './genre.service';
+import { SongController } from './song.controller';
 import {
     Artist,
+    Genres,
     RoomState,
     Song,
     SongArtists,
     SongRequest,
     UserMusicRoom,
 } from '../../domain/entities';
-import { AuthModule } from '../auth/auth.module';
 
 @Module({
     controllers: [SongController],
-    providers: [SongService],
+    providers: [SongService, GenreService],
     imports: [
         AuthModule,
         TypeOrmModule.forFeature([
-            Song,
-            SongRequest,
             Artist,
-            SongArtists,
-            UserMusicRoom,
+            Genres,
             RoomState,
+            Song,
+            SongArtists,
+            SongRequest,
+            UserMusicRoom,
         ]),
     ],
 })
