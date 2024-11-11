@@ -18,8 +18,8 @@ export class UserService {
         updateUserData: Partial<User>,
         file?: Express.Multer.File,
     ): Promise<User> {
+        const existingUser = await this.findOne(id);
         if (file) {
-            const existingUser = await this.findOne(id);
             if (existingUser.url_profile) {
                 const fileKey = existingUser.url_profile.split('/').pop();
                 await this.s3Service.deleteFile(fileKey);
@@ -27,7 +27,10 @@ export class UserService {
             updateUserData.url_profile = await this.s3Service.uploadFile(file);
         }
 
-        await this.userRepository.update(id, updateUserData);
+        await this.userRepository.update(id, {
+            ...existingUser,
+            ...updateUserData,
+        });
         const updatedUser = await this.userRepository.findOneBy({ id });
         if (!updatedUser) {
             throw new NotFoundException(`User with ID ${id} not found`);
