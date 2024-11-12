@@ -62,4 +62,40 @@ export class MusicRoomService {
             },
         );
     }
+
+    //Get more popular rooms
+    async findAll(page: number, limit: number): Promise<MusicRoom[]> {
+        return await this.musicRoomRepository
+            .createQueryBuilder('musicRoom')
+            .leftJoin('musicRoom.userMusicRooms', 'userMusicRoom')
+            .leftJoin('userMusicRoom.user', 'user')
+            .select('musicRoom.id', 'id')
+            .addSelect('musicRoom.name', 'name')
+            .addSelect('musicRoom.description', 'description')
+            .addSelect('musicRoom.is_private', 'is_private')
+            .addSelect('COUNT(DISTINCT user.id) AS userCount')
+            .groupBy('musicRoom.id')
+            .orderBy('userCount', 'DESC')
+            .skip((page - 1) * limit)
+            .take(limit)
+            .getRawMany();
+    }
+
+    async searchRooms(
+        query: string,
+        page: number,
+        limit: number,
+    ): Promise<MusicRoom[]> {
+        return await this.musicRoomRepository
+            .createQueryBuilder('musicRoom')
+            .where(
+                'musicRoom.name LIKE :query OR musicRoom.description LIKE :query',
+                {
+                    query: `%${query}%`,
+                },
+            )
+            .skip((page - 1) * limit)
+            .take(limit)
+            .getMany();
+    }
 }
