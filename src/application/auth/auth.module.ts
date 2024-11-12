@@ -11,12 +11,16 @@ import { User } from '../../domain/entities/user.entity';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 import { GoogleStrategy } from './strategies/google.oauth';
+import { MailerModule } from '../mailer/mailer.module';
+import { MailerService } from '../mailer/mailer.service';
 
 @Module({
     controllers: [AuthController],
-    providers: [AuthService, BcryptAdapter, JwtStrategy, GoogleStrategy],
+    providers: [AuthService, BcryptAdapter, JwtStrategy, GoogleStrategy, MailerService],
     imports: [
         ConfigModule,
+
+        MailerModule,
 
         TypeOrmModule.forFeature([User]),
 
@@ -37,4 +41,4 @@ import { GoogleStrategy } from './strategies/google.oauth';
     ],
     exports: [TypeOrmModule, JwtStrategy, PassportModule, JwtModule],
 })
-export class AuthModule {}
+export class AuthModule { }

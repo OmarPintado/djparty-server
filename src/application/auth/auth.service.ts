@@ -11,6 +11,7 @@ import { BcryptAdapter } from '../../infrastructure/adapters/bcrypt.adapter';
 import { User } from '../../domain/entities/user.entity';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { JwtPayloadInterface } from './interfaces/jwt-payload.interface';
+import { MailerService } from '../mailer/mailer.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
         private readonly userRepository: Repository<User>,
         private readonly jwtService: JwtService,
         private readonly bcryptAdapter: BcryptAdapter,
+        private readonly mailService: MailerService,
     ) {}
 
     async create(createUserDto: CreateUserDto) {
@@ -34,6 +36,7 @@ export class AuthService {
             });
 
             await this.userRepository.save(user);
+            await this.sendMail(user.email, `Sucessfully registration in DjParty!`, `Thanks ${user.fullName} for join to this community, enjoy our services!`)
 
             return {
                 ...user,
@@ -83,4 +86,8 @@ export class AuthService {
         console.log(error);
         throw new InternalServerErrorException('Please check server logs');
     }
+
+    private async sendMail(to: string, subject: string, text: string) {
+        await this.mailService.sendEmail(to, subject, text)
+      }
 }
