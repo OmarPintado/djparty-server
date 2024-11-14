@@ -3,23 +3,23 @@ import {
     Controller,
     Param,
     Patch,
+    Post,
     UploadedFile,
     UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.service';
-import { S3Service } from '../../infrastructure/shared/s3.service';
-import { User } from '../../domain/entities';
-import { UpdateUserDataDto } from './dto/update-user-data.dto';
 import { imageFilterHelper } from './helpers/imageFilter.helper';
+import { UpdateUserDataDto } from './dto/update-user-data.dto';
+import { BanUserDto } from './dto/ban-user.dto';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { ValidRoles } from '../auth/interfaces/valid-roles';
 
 @Controller('user')
 export class UserController {
-    constructor(
-        private readonly userService: UserService,
-        private readonly s3Service: S3Service,
-    ) {}
+    constructor(private readonly userService: UserService) {}
 
+    @Auth(ValidRoles.user, ValidRoles.dj)
     @Patch(':id')
     @UseInterceptors(
         FileInterceptor('file', {
@@ -33,5 +33,10 @@ export class UserController {
         @Body() updateUserDataDto: UpdateUserDataDto,
     ) {
         return this.userService.updateUser(id, updateUserDataDto, file);
+    }
+    @Auth(ValidRoles.user, ValidRoles.dj)
+    @Post('ban')
+    async banUserFromRoom(@Body() banUserDto: BanUserDto) {
+        return await this.userService.banUserFromRoom(banUserDto);
     }
 }

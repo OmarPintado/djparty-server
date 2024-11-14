@@ -1,8 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../domain/entities';
+import { MusicRoom, User, UserMusicRoom } from '../../domain/entities';
 import { Repository } from 'typeorm';
 import { S3Service } from '../../infrastructure/shared/s3.service';
+import { BanUserDto } from './dto/ban-user.dto';
 
 @Injectable()
 export class UserService {
@@ -10,8 +15,49 @@ export class UserService {
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
 
+        @InjectRepository(UserMusicRoom)
+        private readonly userMusicRoomRepository: Repository<UserMusicRoom>,
+
+        @InjectRepository(MusicRoom)
+        private readonly musicRoomRepository: Repository<MusicRoom>,
+
         private readonly s3Service: S3Service,
     ) {}
+
+    async banUserFromRoom(banUserDto: BanUserDto) {
+        const { userId, roomId } = banUserDto;
+
+        const room = await this.musicRoomRepository.findOne({
+            where: { id: roomId },
+        });
+
+        if (!room) {
+            throw new NotFoundException('Room not found.');
+        }
+
+        if (room.created_by === userId) {
+            throw new ForbiddenException('Cannot ban the creator of the room.');
+        }
+
+        const userMusicRoom = await this.userMusicRoomRepository.findOne({
+            where: { user_id: userId, music_room_id: roomId },
+        });
+
+        if (!userMusicRoom) {
+            throw new NotFoundException(
+                'User is not in this room or does not exist.',
+            );
+        }
+
+        userMusicRoom.is_banned = true;
+
+        await this.userMusicRoomRepository.save(userMusicRoom);
+
+        return {
+            message: 'User has been banned from the room successfully.',
+            userMusicRoom: userMusicRoom,
+        };
+    }
 
     async updateUser(
         id: string,
