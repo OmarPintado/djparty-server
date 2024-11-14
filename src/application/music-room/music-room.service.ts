@@ -1,6 +1,11 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MusicRoom, RoomState, User } from '../../domain/entities';
+import {
+    MusicRoom,
+    RoomState,
+    User,
+    UserMusicRoom,
+} from '../../domain/entities';
 import { EntityManager, Repository } from 'typeorm';
 import { CreateMusicRoomDto } from './dto/create-music-room.dto';
 
@@ -15,6 +20,8 @@ export class MusicRoomService {
         private readonly userRepository: Repository<User>,
         @InjectRepository(RoomState)
         private readonly roomStateRepository: Repository<RoomState>,
+        @InjectRepository(UserMusicRoom)
+        private readonly userMusicRoomRepository: Repository<UserMusicRoom>,
     ) {}
 
     async createRoom(createMusicRoomDto: CreateMusicRoomDto) {
@@ -48,6 +55,13 @@ export class MusicRoomService {
 
                     await entityManager.save(RoomState, roomState);
                     this.logger.log('Room state created successfully');
+
+                    const userMusicRoom = entityManager.create(UserMusicRoom, {
+                        user_id: created_by,
+                        music_room_id: savedRoom.id,
+                    });
+                    await entityManager.save(UserMusicRoom, userMusicRoom);
+                    this.logger.log(`User ${created_by} added to the room`);
 
                     return savedRoom;
                 } catch (error) {
