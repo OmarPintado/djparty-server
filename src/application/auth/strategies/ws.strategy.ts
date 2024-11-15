@@ -19,12 +19,7 @@ export class WsStrategy extends PassportStrategy(Strategy) {
     ) {
         super({
             secretOrKey: configService.get('JWT_SECRET'),
-            jwtFromRequest: ExtractJwt.fromExtractors([
-                (req) => {
-                    const { authorization } = req.handshake.headers;
-                    return authorization.split(' ')[1];
-                },
-            ]),
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         });
     }
 
