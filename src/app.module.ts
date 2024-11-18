@@ -24,6 +24,10 @@ import { UserModule } from './application/user/user.module';
             username: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
             synchronize: true,
+            ssl: {
+                rejectUnauthorized:
+                    process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false',
+            },
             entities: Object.values(entities),
         }),
 
