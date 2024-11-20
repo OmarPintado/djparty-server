@@ -26,6 +26,9 @@ export class MusicRoom {
     @Column('boolean', { nullable: false, default: true })
     is_private: boolean;
 
+    @Column('date', { nullable: false })
+    start_date: Date;
+
     @ManyToOne(() => User, (user) => user.music_room)
     @JoinColumn({ name: 'created_by', referencedColumnName: 'id' })
     user: User;

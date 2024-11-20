@@ -1,4 +1,6 @@
 import {
+    IsBoolean,
+    IsDate,
     IsNotEmpty,
     IsOptional,
     IsString,
@@ -19,4 +21,12 @@ export class CreateMusicRoomDto {
     @IsOptional()
     @IsString()
     description: string;
+
+    @IsOptional()
+    @IsBoolean()
+    is_private: boolean;
+
+    @IsNotEmpty()
+    @IsDate()
+    start_date: Date;
 }
