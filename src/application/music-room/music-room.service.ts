@@ -38,6 +38,7 @@ export class MusicRoomService {
         return await this.musicRoomRepository.manager.transaction(
             async (entityManager: EntityManager) => {
                 try {
+                    // Crear instancia de MusicRoom con el DTO completo
                     const musicRoom = entityManager.create(
                         MusicRoom,
                         createMusicRoomDto,
@@ -48,6 +49,7 @@ export class MusicRoomService {
                     );
                     this.logger.log('Music room created successfully');
 
+                    // Crear instancia de RoomState asociada a la sala
                     const roomState = entityManager.create(RoomState, {
                         is_open: false,
                         music_room: savedRoom,
@@ -56,6 +58,7 @@ export class MusicRoomService {
                     await entityManager.save(RoomState, roomState);
                     this.logger.log('Room state created successfully');
 
+                    // Agregar usuario a la sala
                     const userMusicRoom = entityManager.create(UserMusicRoom, {
                         user_id: created_by,
                         music_room_id: savedRoom.id,
