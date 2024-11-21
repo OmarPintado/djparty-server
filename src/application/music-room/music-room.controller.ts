@@ -1,17 +1,18 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { MusicRoomService } from './music-room.service';
 import { CreateMusicRoomDto } from './dto/create-music-room.dto';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { ValidRoles } from '../auth/interfaces/valid-roles';
 import { JoinToRoomDTO } from './dto/join-to-room.dto';
 import { JoinToRoomService } from './join-to-room.service';
+import { UpdateMusicRoomDto } from './dto/update-music-room.dto';
 
 @Controller('music-room')
 export class MusicRoomController {
     constructor(
         private readonly musicRoomService: MusicRoomService,
         private readonly joinToRoomService: JoinToRoomService,
-    ) {}
+    ) { }
 
     @Auth(ValidRoles.user, ValidRoles.dj)
     @Post('create')
@@ -42,5 +43,14 @@ export class MusicRoomController {
         @Query('limit') limit: number = 10,
     ) {
         return await this.musicRoomService.searchRooms(query, page, limit);
+    }
+
+    @Auth(ValidRoles.user, ValidRoles.dj)
+    @Get(':id')
+    async updateRoom(
+        @Param('id') id: string,
+        @Body() updateMusicRoomDto: UpdateMusicRoomDto,
+    ) {
+        return await this.musicRoomService.updateRoom(id, updateMusicRoomDto);
     }
 }
