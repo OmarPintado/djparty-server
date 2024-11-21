@@ -8,6 +8,7 @@ import {
 } from '../../domain/entities';
 import { EntityManager, Repository } from 'typeorm';
 import { CreateMusicRoomDto } from './dto/create-music-room.dto';
+import { UpdateMusicRoomDto } from './dto/update-music-room.dto';
 
 @Injectable()
 export class MusicRoomService {
@@ -22,7 +23,7 @@ export class MusicRoomService {
         private readonly roomStateRepository: Repository<RoomState>,
         @InjectRepository(UserMusicRoom)
         private readonly userMusicRoomRepository: Repository<UserMusicRoom>,
-    ) {}
+    ) { }
 
     async createRoom(createMusicRoomDto: CreateMusicRoomDto) {
         const { created_by } = createMusicRoomDto;
@@ -114,5 +115,21 @@ export class MusicRoomService {
             .skip((page - 1) * limit)
             .take(limit)
             .getMany();
+    }
+
+    async updateRoom(music_room_id: string, updateMusicRoomDto: UpdateMusicRoomDto) {
+        const musicRoom = await this.musicRoomRepository.findOne({
+            where: { id: music_room_id },
+        });
+
+        if (!musicRoom) {
+            this.logger.error(`Music room with ID ${music_room_id} not found`);
+            throw new NotFoundException(`Music room with ID ${music_room_id} not found`);
+        }
+
+        await this.musicRoomRepository.update(music_room_id, {
+            ...musicRoom,
+            ...updateMusicRoomDto
+        });
     }
 }

@@ -8,6 +8,7 @@ import { MusicRoom, User, UserMusicRoom } from '../../domain/entities';
 import { Repository } from 'typeorm';
 import { S3Service } from '../../infrastructure/shared/s3.service';
 import { BanUserDto } from './dto/ban-user.dto';
+import { RemoveUserRoomDto } from './dto/remove-user-room.dto';
 
 @Injectable()
 export class UserService {
@@ -22,7 +23,37 @@ export class UserService {
         private readonly musicRoomRepository: Repository<MusicRoom>,
 
         private readonly s3Service: S3Service,
-    ) {}
+    ) { }
+
+    async removeUserRoom(removeUserRoomDto: RemoveUserRoomDto) {
+        const { userId, roomId } = removeUserRoomDto;
+
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+        })
+
+        if (!user) {
+            throw new NotFoundException('User not found.');
+        }
+
+        await this.musicRoomRepository.delete({
+            id: roomId,
+        });
+    }
+
+    async getHistorialRoom(created_by: string): Promise<MusicRoom[]> {
+        const user = await this.userRepository.findOne({
+            where: { id: created_by },
+        });
+
+        if (!user) {
+            throw new NotFoundException('User not found.');
+        }
+
+        return await this.musicRoomRepository.find({
+            where: { created_by }
+        })
+    }
 
     async banUserFromRoom(banUserDto: BanUserDto) {
         const { userId, roomId } = banUserDto;
