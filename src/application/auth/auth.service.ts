@@ -21,7 +21,7 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly bcryptAdapter: BcryptAdapter,
         private readonly mailService: MailerService,
-    ) {}
+    ) { }
 
     async create(createUserDto: CreateUserDto) {
         try {
@@ -35,6 +35,20 @@ export class AuthService {
                 password: hashedPassword,
             });
 
+            await this.userRepository.save(user);
+            await this.sendMail(user.email, `Sucessfully registration in DjParty!`, `Thanks ${user.fullName} for join to this community, enjoy our services!`)
+
+            return {
+                ...user,
+            };
+        } catch (error) {
+            this.handleDBErrors(error);
+        }
+    }
+
+    async oauthCreate(oauthCreateUserDto: Omit<CreateUserDto, 'password'>) {
+        try {
+            const user = this.userRepository.create(oauthCreateUserDto)
             await this.userRepository.save(user);
             await this.sendMail(user.email, `Sucessfully registration in DjParty!`, `Thanks ${user.fullName} for join to this community, enjoy our services!`)
 
@@ -70,13 +84,6 @@ export class AuthService {
         };
     }
 
-    googleRedirect(req) {
-        return {
-            message: 'User information from google',
-            user: req.user,
-        };
-    }
-
     private getJwtToken(payload: JwtPayloadInterface) {
         return this.jwtService.sign(payload);
     }
@@ -89,5 +96,5 @@ export class AuthService {
 
     private async sendMail(to: string, subject: string, text: string) {
         await this.mailService.sendEmail(to, subject, text)
-      }
+    }
 }

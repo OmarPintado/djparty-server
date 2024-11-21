@@ -12,7 +12,7 @@ import { GoogleOAuthGuard } from './guards/google-oauth.guard';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+    constructor(private readonly authService: AuthService) { }
 
     @Post('register')
     createUser(@Body() createUserDto: CreateUserDto) {
@@ -26,11 +26,12 @@ export class AuthController {
 
     @Get('google')
     @UseGuards(GoogleOAuthGuard)
-    getProfile(@Request() req) {}
+    getProfile(@Request() req) { }
 
     @Get('google-redirect')
     @UseGuards(GoogleOAuthGuard)
-    googleRedirect(@Request() req) {
-        return this.authService.googleRedirect(req);
+    async googleRedirect(@Request() req) {
+        const user: CreateUserDto = req.user
+        return await this.authService.oauthCreate(user)
     }
 }
