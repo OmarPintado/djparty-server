@@ -4,6 +4,7 @@ import {
     Get,
     Post,
     Request,
+    Response,
     UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -30,7 +31,20 @@ export class AuthController {
 
     @Get('google-redirect')
     @UseGuards(GoogleOAuthGuard)
-    googleRedirect(@Request() req) {
-        return this.authService.googleRedirect(req);
+    googleRedirect(@Request() req, @Response() res) {
+        const user = this.authService.googleRedirect(req); 
+        const script = `
+            <script>
+                window.opener.postMessage(${JSON.stringify(user)}, "*");
+                window.close();
+            </script>
+        `;
+        res.type('text/html');
+        res.send(script);
+    }
+    
+    @Post('google-auth')
+    googleAuth(@Body() googleUserDto: LoginUserDto|CreateUserDto) {
+        return this.authService.googleAuth(googleUserDto);
     }
 }

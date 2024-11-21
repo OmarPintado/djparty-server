@@ -51,7 +51,7 @@ export class AuthService {
 
         const user = await this.userRepository.findOne({
             where: { email },
-            select: { email: true, password: true, id: true },
+            select: { email: true, id: true , url_profile: true, fullName: true},
         });
 
         if (!user) throw new UnauthorizedException('Credentials are not valid');
@@ -66,8 +66,44 @@ export class AuthService {
 
         return {
             ...user,
-            token: this.getJwtToken({ user_id: user.id }),
+            token: this.getJwtToken({ user_id: user.id })
         };
+    }
+
+    async googleAuth(googleUserDto: LoginUserDto|CreateUserDto) {
+        try {
+            const { email,...userData } = googleUserDto;
+            const userExists = await this.userRepository.findOne({
+                where: { email },
+                select: { email: true, id: true , url_profile: true, fullName: true},
+            });
+            if (userExists){
+                return {
+                    ...userExists,
+                    token: this.getJwtToken({ user_id: userExists.id })
+                };
+            }else{
+                const hashedPassword = await this.bcryptAdapter.hashPassword('RaNdoMGEnErAtEdPaSsWoRd', 10);
+                const user = this.userRepository.create({
+                    email:email,
+                    password:hashedPassword,
+                    ...userData
+                });
+    
+                await this.userRepository.save(user);
+                await this.sendMail(user.email, `Sucessfully registration in DjParty!`, `Thanks ${user.fullName} for join to this community, enjoy our services!`)
+    
+                return {
+                    fullName: user.fullName,
+                    email: user.email,
+                    url_profile: user.url_profile,
+                    id: user.id,
+                    token: this.getJwtToken({ user_id: user.id })
+                };
+            }
+        } catch (error) {
+            this.handleDBErrors(error);
+        }
     }
 
     googleRedirect(req) {
