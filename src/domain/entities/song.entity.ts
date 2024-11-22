@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { SongArtists } from './song-artists.entity';
 import { SongRequest } from './song-request.entity';
+import { UserFavoriteSongs } from './user-favorite-songs.entity';
 
 @Entity('song')
 export class Song {
@@ -21,4 +22,10 @@ export class Song {
 
     @OneToMany(() => SongRequest, (songRequest) => songRequest.song)
     songRequests: SongRequest[];
+
+    @OneToMany(
+        () => UserFavoriteSongs,
+        (userFavoriteSongs) => userFavoriteSongs.song,
+    )
+    favoriteUsers: UserFavoriteSongs[];
 }

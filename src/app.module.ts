@@ -8,6 +8,7 @@ import * as entities from './domain/entities';
 import { WebSocketModule } from './application/websocket/websocket.module';
 import { SongModule } from './application/song/song.module';
 import { UserModule } from './application/user/user.module';
+import { UserFavoriteSongsModule } from './application/user-favorite-songs/user-favorite-songs.module';
 
 @Module({
     imports: [
@@ -38,6 +39,7 @@ import { UserModule } from './application/user/user.module';
         SpotifyModule,
         UserModule,
         WebSocketModule,
+        UserFavoriteSongsModule,
     ],
     controllers: [],
     providers: [],

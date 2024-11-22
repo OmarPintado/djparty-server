@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { MusicRoom } from './music-room.entity';
 import { UserMusicRoom } from './user-music-room.entity';
+import { UserFavoriteSongs } from './user-favorite-songs.entity';
 
 @Entity('users')
 export class User {
@@ -40,6 +41,12 @@ export class User {
 
     @OneToMany(() => UserMusicRoom, (userMusicRoom) => userMusicRoom.user)
     userMusicRooms: UserMusicRoom[];
+
+    @OneToMany(
+        () => UserFavoriteSongs,
+        (userFavoriteSongs) => userFavoriteSongs.user,
+    )
+    favoriteSongs: UserFavoriteSongs[];
 
     @BeforeInsert()
     checkFieldsBeforeInsert() {
