@@ -3,6 +3,7 @@ import {
     Controller,
     Get,
     Param,
+    Patch,
     Post,
     Query,
     Request,
@@ -64,7 +65,7 @@ export class MusicRoomController {
     }
 
     @Auth(ValidRoles.user, ValidRoles.dj)
-    @Get(':id')
+    @Patch(':id')
     async updateRoom(
         @Param('id') id: string,
         @Body() updateMusicRoomDto: UpdateMusicRoomDto,
