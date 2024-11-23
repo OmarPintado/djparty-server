@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+    Injectable,
+    Logger,
+    NotFoundException,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
     MusicRoom,
@@ -23,7 +28,7 @@ export class MusicRoomService {
         private readonly roomStateRepository: Repository<RoomState>,
         @InjectRepository(UserMusicRoom)
         private readonly userMusicRoomRepository: Repository<UserMusicRoom>,
-    ) { }
+    ) {}
 
     async createRoom(createMusicRoomDto: CreateMusicRoomDto) {
         const { created_by } = createMusicRoomDto;
@@ -117,19 +122,50 @@ export class MusicRoomService {
             .getMany();
     }
 
-    async updateRoom(music_room_id: string, updateMusicRoomDto: UpdateMusicRoomDto) {
+    async updateRoom(
+        music_room_id: string,
+        updateMusicRoomDto: UpdateMusicRoomDto,
+    ) {
         const musicRoom = await this.musicRoomRepository.findOne({
             where: { id: music_room_id },
         });
 
         if (!musicRoom) {
             this.logger.error(`Music room with ID ${music_room_id} not found`);
-            throw new NotFoundException(`Music room with ID ${music_room_id} not found`);
+            throw new NotFoundException(
+                `Music room with ID ${music_room_id} not found`,
+            );
         }
 
         await this.musicRoomRepository.update(music_room_id, {
             ...musicRoom,
-            ...updateMusicRoomDto
+            ...updateMusicRoomDto,
         });
+    }
+
+    async changeRoomState(music_room_id: string, user_id: string) {
+        const musicRoom = await this.musicRoomRepository.findOne({
+            where: { id: music_room_id },
+        });
+
+        if (!musicRoom) {
+            throw new Error('La sala de música no existe');
+        }
+
+        if (musicRoom.created_by !== user_id) {
+            throw new UnauthorizedException(
+                'Solo el creador de la sala puede cambiar su estado',
+            );
+        }
+
+        let roomState = await this.roomStateRepository.findOne({
+            where: { music_room: { id: music_room_id } },
+        });
+
+        roomState.is_open = !roomState.is_open;
+
+        await this.roomStateRepository.save(roomState);
+
+        return `La sala ${musicRoom.name} ha sido cambiado a ${roomState.is_open ? 'abierto' : 'cerrado'}`;
     }
 }
