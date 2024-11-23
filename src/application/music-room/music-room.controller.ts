@@ -72,4 +72,13 @@ export class MusicRoomController {
     ) {
         return await this.musicRoomService.updateRoom(id, updateMusicRoomDto);
     }
+    @Auth(ValidRoles.user, ValidRoles.dj)
+    @Get('is-in-room/:id_room')
+    async isInRoom(
+        @Param('id_room') roomId: string,
+        @Request() req
+    ) {
+        const userId = req.user.id;
+        return await this.joinToRoomService.isUserInRoom(userId, roomId);
+    }
 }
