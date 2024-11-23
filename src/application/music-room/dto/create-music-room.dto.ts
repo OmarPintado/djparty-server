@@ -1,6 +1,5 @@
 import {
     IsBoolean,
-    IsDate,
     IsNotEmpty,
     IsOptional,
     IsString,
@@ -27,6 +26,6 @@ export class CreateMusicRoomDto {
     is_private: boolean;
 
     @IsNotEmpty()
-    @IsDate()
+    @IsString()
     start_date: Date;
 }
