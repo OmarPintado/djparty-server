@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Injectable,
     Logger,
     NotFoundException,
@@ -31,7 +32,7 @@ export class MusicRoomService {
     ) {}
 
     async createRoom(createMusicRoomDto: CreateMusicRoomDto) {
-        const { created_by } = createMusicRoomDto;
+        const { created_by, password, is_private } = createMusicRoomDto;
 
         const user = await this.userRepository.findOne({
             where: { id: created_by },
@@ -39,6 +40,12 @@ export class MusicRoomService {
         if (!user) {
             this.logger.error(`User with ID ${created_by} not found`);
             throw new NotFoundException(`User with ID ${created_by} not found`);
+        }
+
+        if (is_private && !password) {
+            throw new BadRequestException(
+                'Se requiere una contraseña para una sala privada.',
+            );
         }
 
         return await this.musicRoomRepository.manager.transaction(

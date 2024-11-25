@@ -28,4 +28,8 @@ export class CreateMusicRoomDto {
     @IsNotEmpty()
     @IsString()
     start_date: Date;
+
+    @IsOptional()
+    @IsString()
+    password?: string;
 }

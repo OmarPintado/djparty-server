@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserMusicRoom } from '../../domain/entities';
+import { MusicRoom, UserMusicRoom } from '../../domain/entities';
 import { Repository } from 'typeorm';
 import { JoinToRoomDTO } from './dto/join-to-room.dto';
 
@@ -11,10 +11,36 @@ export class JoinToRoomService {
     constructor(
         @InjectRepository(UserMusicRoom)
         private readonly userMusicRoomRepository: Repository<UserMusicRoom>,
+
+        @InjectRepository(MusicRoom)
+        private readonly musicRoomRepository: Repository<MusicRoom>,
     ) {}
 
     async joinToRoom(joinToRoomDTO: JoinToRoomDTO) {
         const { user_id, music_room_id } = joinToRoomDTO;
+
+        // Buscar la sala
+        const musicRoom = await this.musicRoomRepository.findOne({
+            where: { id: music_room_id },
+        });
+
+        if (!musicRoom) {
+            throw new BadRequestException('Sala no encontrada.');
+        }
+
+        // Si la sala es privada, verificar la contraseña
+        if (musicRoom.is_private && musicRoom.password) {
+            const { password } = joinToRoomDTO;
+            if (!password) {
+                throw new BadRequestException(
+                    'Se requiere una contraseña para unirse a esta sala.',
+                );
+            }
+
+            if (password !== musicRoom.password) {
+                throw new BadRequestException('Contraseña incorrecta.');
+            }
+        }
 
         // Verificar si el usuario ya está en la sala
         const existingUserInRoom = await this.userMusicRoomRepository.findOne({

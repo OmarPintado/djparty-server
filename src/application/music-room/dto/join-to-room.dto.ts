@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class JoinToRoomDTO {
     @IsUUID()
@@ -8,4 +8,9 @@ export class JoinToRoomDTO {
     @IsUUID()
     @IsNotEmpty()
     music_room_id;
+
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    password?: string;
 }
