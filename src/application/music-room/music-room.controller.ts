@@ -3,6 +3,7 @@ import {
     Controller,
     Get,
     Param,
+    Patch,
     Post,
     Query,
     Request,
@@ -20,7 +21,7 @@ export class MusicRoomController {
     constructor(
         private readonly musicRoomService: MusicRoomService,
         private readonly joinToRoomService: JoinToRoomService,
-    ) {}
+    ) { }
 
     @Auth(ValidRoles.user, ValidRoles.dj)
     @Post('create')
@@ -64,11 +65,27 @@ export class MusicRoomController {
     }
 
     @Auth(ValidRoles.user, ValidRoles.dj)
-    @Get(':id')
+    @Patch(':id')
     async updateRoom(
         @Param('id') id: string,
         @Body() updateMusicRoomDto: UpdateMusicRoomDto,
     ) {
         return await this.musicRoomService.updateRoom(id, updateMusicRoomDto);
+    }
+
+    @Auth(ValidRoles.user, ValidRoles.dj)
+    @Get('is-in-room/:id_room')
+    async isInRoom(
+        @Param('id_room') roomId: string,
+        @Request() req
+    ) {
+        const userId = req.user.id;
+        return await this.joinToRoomService.isUserInRoom(userId, roomId);
+    }
+
+    @Auth(ValidRoles.user, ValidRoles.dj)
+    @Get(':id')
+    async getRoom(@Param('id') id: string) {
+        return await this.musicRoomService.findRoom(id);
     }
 }

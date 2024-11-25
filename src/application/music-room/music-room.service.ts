@@ -175,4 +175,12 @@ export class MusicRoomService {
 
         return `La sala ${musicRoom.name} ha sido cambiado a ${roomState.is_open ? 'abierto' : 'cerrado'}`;
     }
+
+    async findRoom(id: string): Promise<MusicRoom> {
+        return await this.musicRoomRepository.findOne({
+            where: {
+                id
+            }
+        })
+    }
 }

@@ -76,4 +76,14 @@ export class JoinToRoomService {
             );
         }
     }
+    async isUserInRoom(userId: string, roomId: string): Promise<boolean> {
+        const userRoom = await this.userMusicRoomRepository.findOne({
+            where: {
+                user_id: userId,
+                music_room_id: roomId,
+            },
+        });
+    
+        return !!userRoom; 
+    }
 }

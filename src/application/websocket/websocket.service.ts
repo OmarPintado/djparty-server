@@ -15,7 +15,7 @@ export class WsService {
 
     async handleConnection(socket: Socket): Promise<UserSocket> {
         const token = socket.handshake.headers.authorization.split(' ')[1];
-        const { user_id } = this.jwtService.decode(token);
+        const { user_id } = await this.jwtService.decode(token);
         const music_room_id = socket.handshake.query.music_room_id as string | undefined;
         if (!music_room_id) {
             throw new Error(`User must to be in any music room`)
@@ -23,9 +23,7 @@ export class WsService {
 
         const user = await this.userService.getUserById(user_id);
         return {
-            id: user.id,
-            fullName: user.fullName,
-            isActive: user.isActive,
+            ...user,
             current_room: music_room_id,
             socket: socket,
         };

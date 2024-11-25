@@ -17,6 +17,7 @@ export class SongRequestService {
             where: {
                 music_room_id: music_room_id,
             },
+            relations: ['song', 'song.artistSongs.artist']
         });
     }
 
