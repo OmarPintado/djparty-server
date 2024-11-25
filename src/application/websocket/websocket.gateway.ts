@@ -22,7 +22,7 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor(
         private readonly socketAdapter: SocketAdapter,
         private readonly websocketService: WsService,
-    ) {}
+    ) { }
 
     private logger: Logger = new Logger('AppGateWay');
     private users: Array<UserSocket> = [];
@@ -37,7 +37,7 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.logger.log('Client connected', user.id);
     }
 
-    handleDisconnect(socket: Socket) {
+    async handleDisconnect(socket: Socket) {
         this.users = this.users.filter((c) => c.socket.id != socket.id);
         this.logger.log('Client disconnected', socket.id);
     }
@@ -54,11 +54,21 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         const songRequests =
             await this.websocketService.getSongRequestList(current_room);
-        this.socketAdapter.emitRoom(
+
+        const songReturn = songRequests.map(sr => {
+            return {
+                id: sr.id,
+                title: sr.song.title,
+                artists: sr.song.artistSongs.map(a => a.artist),
+                image: sr.song.image
+            }
+        })
+
+        await this.socketAdapter.emitRoom(
             this.users,
             current_room,
             SocketEvents.GETSONGREQUESTLIST,
-            songRequests,
+            songReturn,
         );
     }
 

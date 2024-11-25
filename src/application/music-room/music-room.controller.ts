@@ -21,7 +21,7 @@ export class MusicRoomController {
     constructor(
         private readonly musicRoomService: MusicRoomService,
         private readonly joinToRoomService: JoinToRoomService,
-    ) {}
+    ) { }
 
     @Auth(ValidRoles.user, ValidRoles.dj)
     @Post('create')
@@ -72,6 +72,7 @@ export class MusicRoomController {
     ) {
         return await this.musicRoomService.updateRoom(id, updateMusicRoomDto);
     }
+
     @Auth(ValidRoles.user, ValidRoles.dj)
     @Get('is-in-room/:id_room')
     async isInRoom(
@@ -80,5 +81,11 @@ export class MusicRoomController {
     ) {
         const userId = req.user.id;
         return await this.joinToRoomService.isUserInRoom(userId, roomId);
+    }
+
+    @Auth(ValidRoles.user, ValidRoles.dj)
+    @Get(':id')
+    async getRoom(@Param('id') id: string) {
+        return await this.musicRoomService.findRoom(id);
     }
 }
