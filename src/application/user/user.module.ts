@@ -4,9 +4,10 @@ import { MusicRoom, User, UserMusicRoom } from '../../domain/entities';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { S3Service } from '../../infrastructure/shared/s3.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([User, UserMusicRoom, MusicRoom])],
+    imports: [AuthModule, TypeOrmModule.forFeature([User, UserMusicRoom, MusicRoom])],
     controllers: [UserController],
     providers: [UserService, S3Service],
 })
