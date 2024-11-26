@@ -34,7 +34,7 @@ export class UserController {
         @UploadedFile() file: Express.Multer.File,
         @Body() updateUserDataDto: UpdateUserDataDto,
     ) {
-        return this.userService.updateUser(id, updateUserDataDto, file);
+        return await this.userService.updateUser(id, updateUserDataDto, file);
     }
     @Auth(ValidRoles.user, ValidRoles.dj)
     @Post('ban')
