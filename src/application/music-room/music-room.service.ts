@@ -30,6 +30,13 @@ export class MusicRoomService {
         @InjectRepository(UserMusicRoom)
         private readonly userMusicRoomRepository: Repository<UserMusicRoom>,
     ) {}
+    async findRoomsByUser(userId: string): Promise<MusicRoom[]> {
+        return await this.musicRoomRepository.find({
+            where: {
+                created_by:userId
+            }
+        })
+    }
 
     async createRoom(createMusicRoomDto: CreateMusicRoomDto) {
         const { created_by, password, is_private } = createMusicRoomDto;
