@@ -19,14 +19,14 @@ import { SongRequestSocket } from './models/song-request.model';
     },
 })
 export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
+    private logger: Logger = new Logger('AppGateWay');
+    private users: Array<UserSocket> = [];
+    private songs: Array<SongRequestSocket> = [];
+
     constructor(
         private readonly socketAdapter: SocketAdapter,
         private readonly websocketService: WsService,
     ) { }
-
-    private logger: Logger = new Logger('AppGateWay');
-    private users: Array<UserSocket> = [];
-    private songs: Array<SongRequestSocket> = [];
 
     @WebSocketServer()
     server: Server;
@@ -54,6 +54,18 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         const songRequests =
             await this.websocketService.getSongRequestList(current_room);
+
+        if (songRequests.length != this.songs.length) {
+            this.songs = songRequests.map(sr => {
+                return {
+                    id: sr.id,
+                    song_id: sr.song_id,
+                    is_accepted: sr.is_accepted,
+                    music_room_id: sr.music_room_id,
+                    user_id: sr.user_id,
+                };
+            })
+        }
 
         const songReturn = songRequests.map(sr => {
             return {
@@ -111,6 +123,7 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const { fullName, current_room } = this.users.find(
             (user) => user.socket.id == socket.id,
         );
+
         if (!current_room) {
             const error = `User ${fullName} is not in any room`
             this.handleError(socket, error)
@@ -119,6 +132,7 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.songs = this.songs.map((s) =>
             s.id == song_request_id ? { ...s, votes: s.votes + 1 } : s,
         );
+
         this.socketAdapter.emitRoom(
             this.users,
             current_room,
@@ -128,7 +142,7 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage(SocketEvents.SELECTEDSONGREQUEST)
-    async selectedSongRequest(socket: Socket, song_request_id: string) {
+    async selectedSongRequest(socket: Socket) {
         const { fullName, current_room } = this.users.find(
             (user) => user.socket.id == socket.id,
         );
@@ -137,13 +151,17 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.handleError(socket, error)
         }
 
-        const songRequest =
+        const maxVotesSong = this.songs.reduce((prev, current) => (prev.votes > current.votes) ? prev : current);
+        const song_request_id = maxVotesSong.id;
+
+        const id_track =
             await this.websocketService.selectedSongRequest(song_request_id);
+
         this.socketAdapter.emitRoom(
             this.users,
             current_room,
             SocketEvents.SELECTEDSONGREQUEST,
-            songRequest,
+            id_track,
         );
     }
 

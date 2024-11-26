@@ -21,11 +21,18 @@ export class SongRequestService {
         });
     }
 
-    async getSongRequestbById(song_id: string): Promise<SongRequest> {
-        return await this.songRequestRepository.findOne({
+    async getSongRequestById(song_id: string): Promise<{ id_track: string }> {
+        const songRequest = await this.songRequestRepository.findOne({
             where: {
-                song_id: song_id,
+                song_id,
             },
+            relations: ['song'],
         });
+
+        if (!songRequest) {
+            throw new Error('SongRequest not found');
+        }
+
+        return { id_track: songRequest.song.id_track };
     }
 }

@@ -4,5 +4,5 @@ export interface SongRequestSocket {
     is_accepted: boolean;
     music_room_id: string;
     user_id: string;
-    votes: number;
+    votes?: number;
 }

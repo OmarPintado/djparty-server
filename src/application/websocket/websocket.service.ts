@@ -36,6 +36,6 @@ export class WsService {
     }
 
     async selectedSongRequest(song_request_id: string) {
-        return await this.songService.getSongRequestbById(song_request_id);
+        return await this.songService.getSongRequestById(song_request_id);
     }
 }
