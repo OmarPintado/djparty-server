@@ -22,6 +22,11 @@ export class MusicRoomController {
         private readonly musicRoomService: MusicRoomService,
         private readonly joinToRoomService: JoinToRoomService,
     ) { }
+    @Auth(ValidRoles.user, ValidRoles.dj)
+    @Get('rooms/:id_user')
+    findRoomsByUser(@Param('id_user') id_user: string) {
+        return this.musicRoomService.findRoomsByUser(id_user);
+    }
 
     @Auth(ValidRoles.user, ValidRoles.dj)
     @Post('create')
