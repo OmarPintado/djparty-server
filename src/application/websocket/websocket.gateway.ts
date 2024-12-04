@@ -89,7 +89,6 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const userFind = this.users.find(
             (user) => user.socket.id == socket.id,
         );
-	console.log("find: ", userFind)
         if (!userFind.current_room) {
             const error = `User is not in any room`
             this.handleError(socket, error)
@@ -98,8 +97,14 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const users_in_room = this.users.filter(
             (u) => u.current_room == userFind.current_room,
         );
-	
-	const users_names = users_in_room.map(user => user.fullName)
+
+        const users_names = users_in_room.map(user => {
+            return {
+                name: user.fullName,
+                url_profile: user.url_profile,
+                isActive: user.isActive,
+            }
+        })
         socket.emit(SocketEvents.GETUSERSBYROOM, users_names);
     }
 
