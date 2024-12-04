@@ -208,11 +208,18 @@ export class MusicRoomService {
         return `La sala ${musicRoom.name} ha sido cambiado a ${roomState.is_open ? 'abierto' : 'cerrado'}`;
     }
 
-    async findRoom(id: string): Promise<MusicRoom> {
-        return await this.musicRoomRepository.findOne({
-            where: {
-                id,
-            },
+    async findRoom(id: string): Promise<MusicRoom & { is_open: boolean }> {
+        const room = await this.musicRoomRepository.findOne({
+            where: { id },
+            relations: ['roomState'],
         });
+
+        if (!room) {
+            throw new Error('Room not found');
+        }
+
+        const is_open = room.roomState?.is_open || false;
+
+        return { ...room, is_open };
     }
 }

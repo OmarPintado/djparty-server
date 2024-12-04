@@ -4,10 +4,12 @@ import {
     JoinColumn,
     ManyToOne,
     OneToMany,
+    OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { UserMusicRoom } from './user-music-room.entity';
+import { RoomState } from './room-state.entity';
 
 @Entity('music_room')
 export class MusicRoom {
@@ -41,4 +43,7 @@ export class MusicRoom {
 
     @OneToMany(() => UserMusicRoom, (userMusicRoom) => userMusicRoom.room)
     userMusicRooms: UserMusicRoom[];
+
+    @OneToOne(() => RoomState, (roomState) => roomState.music_room)
+    roomState: RoomState;
 }
