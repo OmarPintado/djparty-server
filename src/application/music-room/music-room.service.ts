@@ -122,6 +122,7 @@ export class MusicRoomService {
             .addSelect('musicRoom.name', 'name')
             .addSelect('musicRoom.description', 'description')
             .addSelect('musicRoom.is_private', 'is_private')
+            .addSelect('musicRoom.image_url', 'image_url')
             .addSelect('COUNT(DISTINCT user.id) AS userCount')
             .groupBy('musicRoom.id')
             .orderBy('userCount', 'DESC')
