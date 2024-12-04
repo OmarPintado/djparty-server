@@ -1,5 +1,6 @@
 import {
     IsBoolean,
+    IsNotEmpty,
     IsOptional,
     IsString,
     MinLength,
@@ -16,8 +17,8 @@ export class UpdateMusicRoomDto {
     description: string;
 
     @IsOptional()
-    @IsBoolean()
-    is_private: boolean;
+    @IsString()
+    is_private: string;
 
     @IsOptional()
     @IsString()
@@ -26,4 +27,9 @@ export class UpdateMusicRoomDto {
     @IsOptional()
     @IsString()
     image_url: string;
+
+    @IsNotEmpty()
+    @IsString()
+    start_date: Date;
+
 }

@@ -72,7 +72,10 @@ export class WSGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 id: sr.id,
                 title: sr.song.title,
                 artists: sr.song.artistSongs.map(a => a.artist),
-                image: sr.song.image
+                image: sr.song.image,
+                song_id:sr.song_id,
+                popularity:sr.user_id,
+                music_room_id:sr.music_room_id,
             }
         })
 

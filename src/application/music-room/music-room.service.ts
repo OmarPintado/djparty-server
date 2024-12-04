@@ -55,19 +55,21 @@ export class MusicRoomService {
             throw new NotFoundException(`User with ID ${created_by} not found`);
         }
 
-        if (is_private && !password) {
+        if (is_private=='true' && !password) {
             throw new BadRequestException(
                 'Se requiere una contraseña para una sala privada.',
             );
         }
-
+        if(is_private=='false'){
+            createMusicRoomDto.password=null
+        }
         return await this.musicRoomRepository.manager.transaction(
             async (entityManager: EntityManager) => {
                 try {
                     // Crear instancia de MusicRoom con el DTO completo
                     const musicRoom = entityManager.create(
                         MusicRoom,
-                        createMusicRoomDto,
+                        {...createMusicRoomDto,is_private:createMusicRoomDto.is_private=='true'?true:false},
                     );
 
                     if (file) {
@@ -164,7 +166,14 @@ export class MusicRoomService {
                 `Music room with ID ${music_room_id} not found`,
             );
         }
-
+        if (updateMusicRoomDto.is_private=='true' && !updateMusicRoomDto.password) {
+            throw new BadRequestException(
+                'Se requiere una contraseña para una sala privada.',
+            );
+        }
+        if(updateMusicRoomDto.is_private=='false'){
+            updateMusicRoomDto.password=null
+        }
         if (file) {
             if (musicRoom.image_url) {
                 const fileKey = musicRoom.image_url.split('/').pop();
@@ -176,6 +185,8 @@ export class MusicRoomService {
         await this.musicRoomRepository.update(music_room_id, {
             ...musicRoom,
             ...updateMusicRoomDto,
+            is_private:updateMusicRoomDto.is_private=='true'?true:false
+
         });
 
         return await this.musicRoomRepository.findOne({

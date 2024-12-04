@@ -22,8 +22,8 @@ export class CreateMusicRoomDto {
     description: string;
 
     @IsOptional()
-    @IsBoolean()
-    is_private: boolean;
+    @IsString()
+    is_private: string;
 
     @IsNotEmpty()
     @IsString()
