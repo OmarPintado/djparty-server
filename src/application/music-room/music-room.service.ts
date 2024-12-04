@@ -55,19 +55,21 @@ export class MusicRoomService {
             throw new NotFoundException(`User with ID ${created_by} not found`);
         }
 
-        if (is_private && !password) {
+        if (is_private=='true' && !password) {
             throw new BadRequestException(
                 'Se requiere una contraseña para una sala privada.',
             );
         }
-
+        if(is_private=='false'){
+            createMusicRoomDto.password=null
+        }
         return await this.musicRoomRepository.manager.transaction(
             async (entityManager: EntityManager) => {
                 try {
                     // Crear instancia de MusicRoom con el DTO completo
                     const musicRoom = entityManager.create(
                         MusicRoom,
-                        createMusicRoomDto,
+                        {...createMusicRoomDto,is_private:createMusicRoomDto.is_private=='true'?true:false},
                     );
 
                     if (file) {
