@@ -15,6 +15,7 @@ import {
     UserMusicRoom,
 } from '../../domain/entities';
 import { SongRequestDto } from './dto/song-request.dto';
+import { VoteSongDto } from './dto/vote-song.dto';
 
 @Injectable()
 export class SongService {
@@ -124,6 +125,58 @@ export class SongService {
             throw new InternalServerErrorException(
                 'Hubo un error al procesar la solicitud de canción. Por favor, intenta nuevamente más tarde.',
             );
+        }
+    }
+
+    // Nueva función para votar por una canción
+    async voteForSong(voteSongDto: VoteSongDto) {
+        const { song_id, user_id, music_room_id } = voteSongDto;
+        try {
+            // Verificar si la sala de música está activa
+            await this.validateRoomIsActive(music_room_id);
+
+            // Verificar si el usuario pertenece a la sala y que no esté baneado
+            await this.validateUserInRoomAndNotBanned(user_id, music_room_id);
+
+            // Verificar si el usuario ya ha solicitado la canción en la sala
+            const existingRequest = await this.songRequestRepository.findOne({
+                where: {
+                    song_id: song_id,
+                    user_id: user_id,
+                    music_room_id: music_room_id,
+                },
+            });
+
+            if (existingRequest) {
+                throw new BadRequestException('Ya tienes una solicitud de esta canción registrada en esta sala.');
+            }
+
+            // Verificar si la canción existe en la base de datos
+            const song = await this.songRepository.findOne({
+                where: { id: song_id },
+            });
+
+            if (!song) {
+                throw new BadRequestException('La canción no existe en la base de datos.');
+            }
+
+            // Registrar la solicitud de canción
+            const songRequest = this.songRequestRepository.create({
+                song_id: song.id,
+                music_room_id: music_room_id,
+                user_id: user_id,
+                is_accepted: false,
+            });
+
+            await this.songRequestRepository.save(songRequest);
+
+            return {
+                message: `Voto registrado correctamente para la canción: ${song.title}`,
+            };
+
+        } catch (error) {
+            this.logger.error(error);
+            throw new BadRequestException(`${error.message}`);
         }
     }
 
