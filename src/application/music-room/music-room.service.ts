@@ -15,6 +15,7 @@ import {
 import { EntityManager, Repository } from 'typeorm';
 import { CreateMusicRoomDto } from './dto/create-music-room.dto';
 import { UpdateMusicRoomDto } from './dto/update-music-room.dto';
+import { S3Service } from '../../infrastructure/shared/s3.service';
 
 @Injectable()
 export class MusicRoomService {
@@ -29,16 +30,21 @@ export class MusicRoomService {
         private readonly roomStateRepository: Repository<RoomState>,
         @InjectRepository(UserMusicRoom)
         private readonly userMusicRoomRepository: Repository<UserMusicRoom>,
+
+        private readonly s3Service: S3Service,
     ) {}
     async findRoomsByUser(userId: string): Promise<MusicRoom[]> {
         return await this.musicRoomRepository.find({
             where: {
-                created_by:userId
-            }
-        })
+                created_by: userId,
+            },
+        });
     }
 
-    async createRoom(createMusicRoomDto: CreateMusicRoomDto) {
+    async createRoom(
+        createMusicRoomDto: CreateMusicRoomDto,
+        file?: Express.Multer.File,
+    ) {
         const { created_by, password, is_private } = createMusicRoomDto;
 
         const user = await this.userRepository.findOne({
@@ -63,6 +69,12 @@ export class MusicRoomService {
                         MusicRoom,
                         createMusicRoomDto,
                     );
+
+                    if (file) {
+                        musicRoom.image_url =
+                            await this.s3Service.uploadFile(file);
+                    }
+
                     const savedRoom = await entityManager.save(
                         MusicRoom,
                         musicRoom,
@@ -139,6 +151,7 @@ export class MusicRoomService {
     async updateRoom(
         music_room_id: string,
         updateMusicRoomDto: UpdateMusicRoomDto,
+        file?: Express.Multer.File,
     ) {
         const musicRoom = await this.musicRoomRepository.findOne({
             where: { id: music_room_id },
@@ -151,9 +164,21 @@ export class MusicRoomService {
             );
         }
 
+        if (file) {
+            if (musicRoom.image_url) {
+                const fileKey = musicRoom.image_url.split('/').pop();
+                await this.s3Service.deleteFile(fileKey);
+            }
+            musicRoom.image_url = await this.s3Service.uploadFile(file);
+        }
+
         await this.musicRoomRepository.update(music_room_id, {
             ...musicRoom,
             ...updateMusicRoomDto,
+        });
+
+        return await this.musicRoomRepository.findOne({
+            where: { id: music_room_id },
         });
     }
 
@@ -186,8 +211,8 @@ export class MusicRoomService {
     async findRoom(id: string): Promise<MusicRoom> {
         return await this.musicRoomRepository.findOne({
             where: {
-                id
-            }
-        })
+                id,
+            },
+        });
     }
 }

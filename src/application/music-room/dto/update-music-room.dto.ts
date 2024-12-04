@@ -1,6 +1,5 @@
 import {
     IsBoolean,
-    IsDate,
     IsOptional,
     IsString,
     MinLength,
@@ -23,4 +22,8 @@ export class UpdateMusicRoomDto {
     @IsOptional()
     @IsString()
     password: string;
+
+    @IsOptional()
+    @IsString()
+    image_url: string;
 }

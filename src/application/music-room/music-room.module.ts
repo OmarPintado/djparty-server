@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MusicRoom, RoomState, UserMusicRoom } from '../../domain/entities';
 import { JoinToRoomService } from './join-to-room.service';
 import { JwtStrategy } from '../auth/strategies/jwt.strategy';
+import { S3Service } from '../../infrastructure/shared/s3.service';
 
 @Module({
     imports: [
@@ -13,6 +14,6 @@ import { JwtStrategy } from '../auth/strategies/jwt.strategy';
         TypeOrmModule.forFeature([MusicRoom, RoomState, UserMusicRoom]),
     ],
     controllers: [MusicRoomController],
-    providers: [MusicRoomService, JoinToRoomService, JwtStrategy],
+    providers: [MusicRoomService, JoinToRoomService, JwtStrategy, S3Service],
 })
 export class MusicRoomModule {}

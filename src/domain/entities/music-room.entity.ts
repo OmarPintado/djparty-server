@@ -32,6 +32,9 @@ export class MusicRoom {
     @Column('varchar', { nullable: true, default: null })
     password: string;
 
+    @Column('text', { nullable: true, default: null })
+    image_url: string;
+
     @ManyToOne(() => User, (user) => user.music_room)
     @JoinColumn({ name: 'created_by', referencedColumnName: 'id' })
     user: User;

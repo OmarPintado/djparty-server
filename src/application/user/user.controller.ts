@@ -36,6 +36,7 @@ export class UserController {
     ) {
         return await this.userService.updateUser(id, updateUserDataDto, file);
     }
+
     @Auth(ValidRoles.user, ValidRoles.dj)
     @Post('ban')
     async banUserFromRoom(@Body() banUserDto: BanUserDto) {
