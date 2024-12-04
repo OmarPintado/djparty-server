@@ -126,9 +126,9 @@ export class MusicRoomService {
         return await this.musicRoomRepository
             .createQueryBuilder('musicRoom')
             .where(
-                'musicRoom.name LIKE :query OR musicRoom.description LIKE :query',
+                'LOWER(musicRoom.name) LIKE LOWER(:query) OR LOWER(musicRoom.description) LIKE LOWER(:query)',
                 {
-                    query: `%${query}%`,
+                    query: `%${query.toLowerCase()}%`,
                 },
             )
             .skip((page - 1) * limit)

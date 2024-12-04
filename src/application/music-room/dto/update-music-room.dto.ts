@@ -19,4 +19,8 @@ export class UpdateMusicRoomDto {
     @IsOptional()
     @IsBoolean()
     is_private: boolean;
+
+    @IsOptional()
+    @IsString()
+    password: string;
 }
